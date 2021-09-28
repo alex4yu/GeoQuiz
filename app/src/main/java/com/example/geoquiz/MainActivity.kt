@@ -28,6 +28,7 @@ class MainActivity : AppCompatActivity() {
         truebutton = findViewById(R.id.true_button)
         falsebutton = findViewById(R.id.false_button)
         questionTextView = findViewById(R.id.question_text_view)
+        nextbutton = findViewById(R.id.next_button)
         truebutton.setOnClickListener{view: View ->
             var toast = Toast.makeText(this, R.string.correct_toast, Toast.LENGTH_SHORT)
             toast.setGravity(Gravity.TOP, 0, 0)
@@ -39,7 +40,18 @@ class MainActivity : AppCompatActivity() {
             toast.setGravity(Gravity.TOP, 0, 0)
             toast.show()
         }
+        nextbutton.setOnClickListener {
+            currentIndex = (currentIndex + 1) % questionBank.size
+            updateQuestion()
+        }
+        updateQuestion()
+    }
+    private fun updateQuestion(){
         val questionTextResId = questionBank[currentIndex].textResId
         questionTextView.setText(questionTextResId)
+    }
+    private fun checkResponse(userAnswer: Boolean){
+        val correctAnswer = questionBank[currentIndex].answer
+
     }
 }
