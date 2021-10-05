@@ -9,6 +9,8 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 
 private const val TAG = "MainActivity"
 class MainActivity : AppCompatActivity() {
@@ -17,7 +19,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var nextbutton: ImageButton
     private lateinit var questionTextView: TextView
     private lateinit var prevbutton: ImageButton
-    private var correct: Int = 0
+    private var correct: Double = 0.0
     private var score = false
     private val questionBank = listOf(
         Question(R.string.question_australia, true),
@@ -30,6 +32,9 @@ class MainActivity : AppCompatActivity() {
     private var currentIndex = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate(Bundle?) called")
+        val provider: ViewModelProvider = ViewModelProviders.of(this)
+        val quizViewModel = provider.get(QuizViewModel::class.java)
+        Log.d(TAG, "Got a QuizViewModel: $quizViewModel")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         truebutton = findViewById(R.id.true_button)
@@ -101,7 +106,13 @@ class MainActivity : AppCompatActivity() {
     private fun updateQuestion(){
         if (score)
         {
-            val percent: String = correct.toString()+"/"+questionBank.size.toString()+" correct"
+            var percentdouble: Double = correct/questionBank.size*100
+            var percentString: String = percentdouble.toString()
+            if(percentString.length > 3)
+            {
+                percentString = percentString.substring(0, 4)
+            }
+            var percent: String = "$percentString correct"
             val toast = Toast.makeText(this, percent, Toast.LENGTH_LONG )
             toast.setGravity(Gravity.TOP, 0, 0)
             toast.show()
