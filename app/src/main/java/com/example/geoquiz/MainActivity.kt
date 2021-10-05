@@ -17,8 +17,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var nextbutton: ImageButton
     private lateinit var questionTextView: TextView
     private lateinit var prevbutton: ImageButton
-    private var correct: Double = 0.0
-    private var answered = false
+    private var correct: Int = 0
+    private var score = false
     private val questionBank = listOf(
         Question(R.string.question_australia, true),
         Question(R.string.question_oceans, true),
@@ -42,23 +42,27 @@ class MainActivity : AppCompatActivity() {
             updateQuestion()
         }
         truebutton.setOnClickListener{view: View ->
-            if(!answered){
-                val toast = Toast.makeText(this, checkAnswer(true), Toast.LENGTH_SHORT)
-                toast.setGravity(Gravity.TOP, 0, 0)
-                toast.show()
-                answered = true
-            }
+
+            val toast = Toast.makeText(this, checkAnswer(true), Toast.LENGTH_SHORT)
+            toast.setGravity(Gravity.TOP, 0, 0)
+            toast.show()
+
+
+            truebutton.isClickable = false
+            falsebutton.isClickable = false
 
 
 
         }
         falsebutton.setOnClickListener { view: View ->
-            if (!answered) {
-                val toast = Toast.makeText(this, checkAnswer(false), Toast.LENGTH_SHORT)
-                toast.setGravity(Gravity.TOP, 0, 0)
-                toast.show()
-                answered = true
-            }
+
+            val toast = Toast.makeText(this, checkAnswer(false), Toast.LENGTH_SHORT)
+            toast.setGravity(Gravity.TOP, 0, 0)
+            toast.show()
+
+
+            truebutton.isClickable = false
+            falsebutton.isClickable = false
         }
 
 
@@ -95,17 +99,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateQuestion(){
-        if (currentIndex == questionBank.size - 1)
+        if (score)
         {
-            val percent: Double = correct/questionBank.size*100
-            val stringPercent = percent.toString()
-            val toast = Toast.makeText(this, stringPercent, Toast.LENGTH_LONG )
+            val percent: String = correct.toString()+"/"+questionBank.size.toString()+" correct"
+            val toast = Toast.makeText(this, percent, Toast.LENGTH_LONG )
             toast.setGravity(Gravity.TOP, 0, 0)
             toast.show()
+            score = false
+        }
+        if (currentIndex == questionBank.size-1)
+        {
+            score = true
         }
         val questionTextResId = questionBank[currentIndex].textResId
         questionTextView.setText(questionTextResId)
-        answered=false
+        truebutton.isClickable = true
+        falsebutton.isClickable = true
+
     }
     private fun checkAnswer(userAnswer: Boolean): Int {
         val correctAnswer = questionBank[currentIndex].answer
