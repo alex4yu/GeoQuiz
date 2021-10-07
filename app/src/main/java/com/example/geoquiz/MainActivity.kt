@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 
 private const val TAG = "MainActivity"
+private const val KEY_INDEX = "index"
 class MainActivity : AppCompatActivity() {
     private lateinit var truebutton: Button
     private lateinit var falsebutton: Button
@@ -21,19 +22,15 @@ class MainActivity : AppCompatActivity() {
     private lateinit var prevbutton: ImageButton
     private var correct: Double = 0.0
     private var score = false
-    private val questionBank = listOf(
-        Question(R.string.question_australia, true),
-        Question(R.string.question_oceans, true),
-        Question(R.string.question_mideast, false),
-        Question(R.string.question_africa, false),
-        Question(R.string.question_americas, true),
-        Question(R.string.question_asia, true))
 
-    private var currentIndex = 0
+    private val quizViewModel: QuizViewModel by lazy {
+        ViewModelProviders.of(this).get(QuizViewModel::class.java)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
+        quizViewModel.currentIndex = savedInstanceState?.getInt(KEY_INDEX, 0) ?:0
+
         Log.d(TAG, "onCreate(Bundle?) called")
-        val provider: ViewModelProvider = ViewModelProviders.of(this)
-        val quizViewModel = provider.get(QuizViewModel::class.java)
+
         Log.d(TAG, "Got a QuizViewModel: $quizViewModel")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -43,7 +40,7 @@ class MainActivity : AppCompatActivity() {
         nextbutton = findViewById(R.id.next_button)
         prevbutton = findViewById(R.id.prev_button)
         questionTextView.setOnClickListener{
-            currentIndex = (currentIndex + 1) % questionBank.size
+            quizViewModel.moveToNext()
             updateQuestion()
         }
         truebutton.setOnClickListener{view: View ->
@@ -73,11 +70,11 @@ class MainActivity : AppCompatActivity() {
 
 
         nextbutton.setOnClickListener {
-            currentIndex = (currentIndex + 1) % questionBank.size
+            quizViewModel.moveToNext()
             updateQuestion()
         }
         prevbutton.setOnClickListener {
-            currentIndex = (currentIndex - 1) % questionBank.size
+            quizViewModel.moveToNext()
             updateQuestion()
         }
         updateQuestion()
@@ -94,6 +91,11 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
         Log.d(TAG, "onPause() called")
     }
+    override fun onSaveInstanceState(savedInstanceState: Bundle) {
+        super.onSaveInstanceState(savedInstanceState)
+        Log.i(TAG, "onSaveInstanceState")
+        savedInstanceState.putInt(KEY_INDEX, quizViewModel.currentIndex)
+    }
     override fun onStop() {
         super.onStop()
         Log.d(TAG, "onStop() called")
@@ -106,7 +108,7 @@ class MainActivity : AppCompatActivity() {
     private fun updateQuestion(){
         if (score)
         {
-            var percentdouble: Double = correct/questionBank.size*100
+            var percentdouble: Double = correct/quizViewModel.bankSize*100
             var percentString: String = percentdouble.toString()
             if(percentString.length > 3)
             {
@@ -118,18 +120,18 @@ class MainActivity : AppCompatActivity() {
             toast.show()
             score = false
         }
-        if (currentIndex == questionBank.size-1)
+        if (quizViewModel.currentIndex == quizViewModel.bankSize - 1)
         {
             score = true
         }
-        val questionTextResId = questionBank[currentIndex].textResId
+        val questionTextResId = quizViewModel.currentQuestionText
         questionTextView.setText(questionTextResId)
         truebutton.isClickable = true
         falsebutton.isClickable = true
 
     }
     private fun checkAnswer(userAnswer: Boolean): Int {
-        val correctAnswer = questionBank[currentIndex].answer
+        val correctAnswer = quizViewModel.currentQuestionAnswer
         val messageResId: Int
         if(userAnswer == correctAnswer)
         {
