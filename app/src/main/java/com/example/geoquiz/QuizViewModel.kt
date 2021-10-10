@@ -16,11 +16,13 @@ class QuizViewModel : ViewModel() {
 
     var currentIndex = 0
     val bankSize = questionBank.size
-    val currentQuestionAnswer = questionBank[currentIndex].answer
-    val currentQuestionText = questionBank[currentIndex].textResId
+    var currentQuestionAnswer = questionBank[currentIndex].answer
+    var currentQuestionText = questionBank[currentIndex].textResId
     fun moveToNext()
     {
         currentIndex = (currentIndex + 1) % questionBank.size
+        currentQuestionText = questionBank[currentIndex].textResId
+        currentQuestionAnswer = questionBank[currentIndex].answer
     }
 
 }
