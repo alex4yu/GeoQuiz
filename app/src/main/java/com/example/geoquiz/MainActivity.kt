@@ -1,5 +1,6 @@
 package com.example.geoquiz
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -20,6 +21,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var nextbutton: ImageButton
     private lateinit var questionTextView: TextView
     private lateinit var prevbutton: ImageButton
+    private lateinit var cheatbutton: Button
     private var correct: Double = 0.0
     private var score = false
 
@@ -39,9 +41,14 @@ class MainActivity : AppCompatActivity() {
         questionTextView = findViewById(R.id.question_text_view)
         nextbutton = findViewById(R.id.next_button)
         prevbutton = findViewById(R.id.prev_button)
+        cheatbutton = findViewById(R.id.cheat_button)
         questionTextView.setOnClickListener{
             quizViewModel.moveToNext()
             updateQuestion()
+        }
+        cheatbutton.setOnClickListener{view: View->
+            val intent = Intent(this, CheatActivity::class.java)
+            startActivity(intent)
         }
         truebutton.setOnClickListener{view: View ->
 
