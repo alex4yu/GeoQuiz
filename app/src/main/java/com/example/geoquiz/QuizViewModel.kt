@@ -5,7 +5,8 @@ import androidx.lifecycle.ViewModel
 
 private const val TAG = "QuizViewModel"
 class QuizViewModel : ViewModel() {
-
+    var isCheater = false
+    var cheatsLeft = 3
     private val questionBank = listOf(
         Question(R.string.question_australia, true),
         Question(R.string.question_oceans, true),
@@ -24,5 +25,8 @@ class QuizViewModel : ViewModel() {
         currentQuestionText = questionBank[currentIndex].textResId
         currentQuestionAnswer = questionBank[currentIndex].answer
     }
-
+    fun usedCheat()
+    {
+        cheatsLeft--
+    }
 }
